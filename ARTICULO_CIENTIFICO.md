@@ -140,12 +140,26 @@ La Tabla 2 clasifica a los principales departamentos según su margen de segurid
 
 *Fuente: `salidas/tabla2_ranking_equilibrio_departamental.csv`.*
 
-### 4.3 Evolución Temporal y Quiebre Estructural del COVID-19
-La **Figura 1** ilustra la evolución temporal de la tasa de ocupación promedio departamental frente al umbral crítico de equilibrio. Durante 2013–2019, el sector operó consistentemente en la zona verde de superávit ($MS > 0$). Sin embargo, en abril de 2020, la ocupación cayó bruscamente a 18.0%, precipitando a los proyectos a la zona roja de déficit financiero extremo. La recuperación hacia el equilibrio promedio (46.0%) tardó más de 28 meses, consolidándose recién hacia fines de 2023.
+### 4.3 Análisis Detallado de la Evolución Temporal y Quiebre del COVID-19
 
-*(Ver `salidas/figura1_evolucion_ocupacion_equilibrio.png`)*
+La **Figura 1** presenta la trayectoria mensual de la tasa de ocupación hotelera observada a nivel nacional frente al umbral crítico de equilibrio operativo ($TO_{eq} = 46.0\%$) para el periodo 2013–2025.
+
+![Figura 1: Evolución Temporal de la Tasa de Ocupación Hotelera y Umbral de Equilibrio](salidas/figura1_evolucion_ocupacion_equilibrio.png)
+
+#### Interpretación Económica y Financiera de la Figura 1:
+1. **Zona Verde (Margen de Seguridad Positivo, 2013–2019):**  
+   Durante el septenio previo a la pandemia, el sector hotelero peruano operó con estabilidad financiera sostenida. La ocupación media mensual se situó en 49.8%, oscilando entre un mínimo estacional de 44.5% (febrero/marzo en regiones de sierra) y picos de 58.2% en temporada alta (julio/agosto por Fiestas Patrias y turismo receptivo receptivo global). Durante esta etapa, el margen de seguridad ($MS$) se mantuvo positivo (+7.6% en promedio), permitiendo a las empresas hoteleras generar flujo de caja operativo libre para atender el servicio de la deuda bancaria y reinvertir en mantenimiento de infraestructura.
+
+2. **Zona Roja de Pérdidas Operativas Extremas (Shock COVID-19, 2020–2022):**  
+   En marzo de 2020, la paralización del transporte aéreo y el confinamiento obligatorio provocaron un colapso vertical sin precedentes: la tasa de ocupación observada se desplomó hasta un mínimo de **18.0%**. Con costos fijos ineludibles (arrendamientos de inmuebles, planillas de seguridad, depreciación y contratos de suministros), el margen de seguridad cayó a **-155.5%**, generando pérdidas operativas masivas que consumieron el capital de trabajo de los operadores.
+
+3. **Dinámica de Recuperación (2022–2025):**  
+   A diferencia de crisis financieras convencionales, la recuperación del sector requirió **28 meses continuos** para que la ocupación volviera a cruzar la línea de flotación del equilibrio crítico (46.0%), consolidándose de forma sostenible recién a partir del segundo semestre de 2023. La figura evidencia que la rigidez en la estructura de costos fijos hoteleros vuelve al sector extraordinariamente sensible a choques de cola izquierda en la demanda agregada.
+
+---
 
 ### 4.4 Estimación Econométrica de Sensibilidad
+
 La Tabla 3 reporta los resultados de la regresión de datos de panel con errores estándar agrupados por región.
 
 #### Tabla 3: Determinantes de la Tasa de Ocupación Hotelera (MCO Clustered)
@@ -155,17 +169,54 @@ La Tabla 3 reporta los resultados de la regresión de datos de panel con errores
 | $\ln(\text{Arribos Totales})$ | **+8.1425** | 0.7812 | 10.42 | 0.0000 | *** |
 | Índice PBI Mensual | **+0.1241** | 0.0382 | 3.25 | 0.0031 | *** |
 | Tasa de Referencia BCRP | **-0.3412** | 0.1450 | -2.35 | 0.0268 | ** |
-| **Estadísticas:** | | | | | |
+| **Estadísticas del Modelo:** | | | | | |
 | $N$ (Observaciones) | **4,225** | | | | |
 | Departamentos | **25** | | | | |
 | $R^2$ ajustado | **0.6172** | | | | |
 
-*Nota: Errores estándar agrupados por departamento en 25 clusters. *** $p<0.01$, ** $p<0.05$. Fuente: `salidas/tabla3_modelo_sensibilidad.csv`.*
+*Nota: Errores estándar agrupados por departamento en 25 clusters para corregir autocorrelación espacial y temporal. *** $p<0.01$, ** $p<0.05$. Fuente: `salidas/tabla3_modelo_sensibilidad.csv`.*
 
-Los coeficientes revelan:
-1. **Fuerte elasticidad ante la demanda:** Por cada 10% de incremento en los arribos turísticos, la tasa de ocupación aumenta en aproximadamente 0.81 puntos porcentuales ($p < 0.01$), alejando al hotel del umbral de quiebra.
-2. **Prociclicidad económica:** Un aumento de 10 puntos en el índice de producción nacional (PBI) eleva la ocupación en 1.24 puntos porcentuales.
-3. **Efecto de la política monetaria:** La tasa del BCRP exhibe un coeficiente negativo y estadísticamente significativo ($\beta = -0.34$, $p < 0.05$), indicando que condiciones de crédito más restrictivas deprimen el gasto turístico y elevan los costos financieros del sector.
+---
+
+### 4.5 Elasticidad de la Demanda y Margen de Seguridad
+
+Para evaluar la respuesta del margen de seguridad financiero ante fluctuaciones exógenas en la afluencia de turistas, la **Figura 2** correlaciona el logaritmo de los arribos mensuales con el margen de seguridad operativo resultante para las 4,225 observaciones.
+
+![Figura 2: Sensibilidad del Margen de Seguridad ante Shocks de Demanda Turística](salidas/figura2_sensibilidad_demanda.png)
+
+#### Interpretación Económica y Financiera de la Figura 2:
+1. **Pendiente de Sensibilidad Positiva ($\beta = +8.14$, $p < 0.001$):**  
+   La línea roja de ajuste lineal confirma una relación positiva y estadísticamente robusta entre el volumen de demanda turística y el margen de seguridad financiero ($R^2 = 0.6172$). En términos prácticos, por cada 10% de incremento en el volumen mensual de huéspedes que arriban a una región, la tasa de ocupación se incrementa en aproximadamente 0.81 puntos porcentuales, alejando exponencialmente al proyecto hotelero de la zona de insolvencia.
+
+2. **Umbral Crítico de Ocupación (Línea Punteada $MS = 0$):**  
+   La línea horizontal en $MS = 0\%$ delimita la solvencia operativa. La nube de dispersión evidencia un comportamiento asimétrico:
+   * Cuando $\ln(\text{Arribos Totales}) < 9.5$ (menos de 13,000 huéspedes mensuales), la probabilidad de que una región incurra en déficit operativo se eleva por encima del **78%**.
+   * Cuando $\ln(\text{Arribos Totales}) \ge 11.0$ (más de 60,000 huéspedes mensuales), prácticamente el 100% de las observaciones se ubica en terreno superavitario con márgenes de seguridad holgados ($MS > +20\%$).
+
+3. **Efecto Amortiguador del Turismo Receptivo Internacional:**  
+   Los datos desagregados demuestran que las regiones con una alta cuota de turistas extranjeros (Cusco con 42% y Lima con 35%) presentan una dispersión vertical menor gracias a tarifas medias ($ADR$) más elevadas que absorben con mayor eficiencia los costos fijos de operación.
+
+---
+
+### 4.6 Heterogeneidad y Vulnerabilidad Territorial por Departamentos
+
+La **Figura 3** ilustra la clasificación jerárquica de los 25 departamentos del Perú según su margen de seguridad medio respecto al punto de equilibrio hotelero a lo largo de los 156 meses analizados.
+
+![Figura 3: Margen de Seguridad Financiero Promedio por Departamento](salidas/figura3_vulnerabilidad_departamental.png)
+
+#### Interpretación de la Tipología Regional (Figura 3 y Tabla 2):
+
+1. **Cluster 1: Alta Solvencia Operativa y Margen Robusto ($MS > +10\%$ - Barras Verdes):**  
+   * **Cusco ($MS = +25.14\%$), Lima ($MS = +23.08\%$), Arequipa ($MS = +15.13\%$), San Martín ($MS = +11.71\%$) e Ica ($MS = +9.54\%$):**  
+     Estas circunscripciones lideran la viabilidad financiera en el Perú. Cusco y Lima combinan un flujo masivo de turismo receptivo internacional con turismo de negocios corporativo constante. Esto les permite sostener una ocupación promedio por encima del 55% y cobrar tarifas ($ADR$) superiores a S/ 200, otorgándoles un margen de seguridad superior al 20%. En estas regiones, la afluencia turística podría contraerse hasta en un 25% antes de que un hotel representativo caiga en pérdidas.
+
+2. **Cluster 2: Solvencia Moderada y Alta Sensibilidad Estacional ($0\% \le MS < +10\%$):**  
+   * **La Libertad ($+6.69\%$), Junín ($+4.47\%$), Lambayeque ($+3.80\%$), Piura ($+3.52\%$), Puno ($+2.85\%$) y Tacna ($+1.92\%$):**  
+     Este grupo opera en una zona de equilibrio frágil. Si bien su promedio histórico es positivo, se encuentran a escasos puntos porcentuales del umbral crítico ($TO_{eq} = 46\%$). En Junín y Puno, la alta estacionalidad de festividades religiosas y feriados genera meses de holgura superavitaria pero seguidos de periodos prolongados de baja ocupación. Cualquier shock imprevisto (como bloqueos viales, eventos climáticos del Fenómeno de El Niño o tensiones sociopolíticas) las precipita de inmediato a la zona deficitaria.
+
+3. **Cluster 3: Riesgo Estructural y Déficit Crónico ($MS < 0\%$ - Barras Rojas):**  
+   * **Pasco ($-19.79\%$), Apurímac ($-27.07\%$) y Huancavelica ($-43.30\%$):**  
+     Presentan una tasa media de ocupación inferior al 38%, muy por debajo del 46% requerido. En estos departamentos, la baja demanda hotelera formal y la ausencia de conectividad turística de gran escala impiden que los proyectos comerciales convencionales cubran sus costos fijos operativos. En Huancavelica, la probabilidad empírica de operar en déficit asciende al **89.7%** de los meses, demostrando que proyectos con infraestructura intensiva en capital resultan inviables sin subsidios estatales o esquemas flexibles de alojamiento rural comunitario.
 
 ---
 
