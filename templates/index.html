@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Financiero | UNCP - Finanzas I</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    .font-mono-code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased">
+
+  <!-- Header Superior -->
+  <header class="bg-slate-950 border-b border-slate-800 px-6 py-4 sticky top-0 z-50 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i class="fa-solid fa-chart-line text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white tracking-tight leading-tight">
+            Punto de Equilibrio & Sensibilidad Turística Regional
+          </h1>
+          <p class="text-xs text-slate-400">
+            Finanzas I (055D) · UNCP · Docente: <span class="text-indigo-400 font-medium">Dr. Ciro Iván Machacuay Meza</span>
+          </p>
+        </div>
+      </div>
+      
+      <!-- Badges de Estado -->
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistema Listo
+        </span>
+        <button onclick="ejecutarTodo()" id="btn-run-all" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg shadow transition">
+          <i class="fa-solid fa-play"></i> Ejecutar Todo el Pipeline
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 w-full flex-1 space-y-6">
+
+    <!-- Tarjetas de Métricas Resumen -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 shadow">
+        <div class="flex items-center justify-between text-slate-400 text-xs">
+          <span>VÍA 1: APIs PÚBLICAS</span>
+          <i class="fa-solid fa-cloud-arrow-down text-blue-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-white">156 Meses</span>
+          <span class="text-xs text-emerald-400 font-medium">HTTP 200</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">BCRPData (IPC, PBI, Tasa) + Banco Mundial</p>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 shadow">
+        <div class="flex items-center justify-between text-slate-400 text-xs">
+          <span>VÍA 2: SCRAPING / MINCETUR</span>
+          <i class="fa-solid fa-hotel text-amber-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-white">3,900 Obs</span>
+          <span class="text-xs text-emerald-400 font-medium">25 Departamentos</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">Arribos, pernoctaciones y capacidad hotelera</p>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 shadow">
+        <div class="flex items-center justify-between text-slate-400 text-xs">
+          <span>PANEL PROCESADO</span>
+          <i class="fa-solid fa-database text-emerald-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-bold text-white" id="stat-filas">4,225 Filas</span>
+          <span class="text-xs text-indigo-400 font-medium">23 Columnas</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">Llave común: periodo + ubigeo</p>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 shadow">
+        <div class="flex items-center justify-between text-slate-400 text-xs">
+          <span>HASH DE INTEGRIDAD</span>
+          <i class="fa-solid fa-shield-halved text-purple-400"></i>
+        </div>
+        <div class="mt-2 truncate font-mono-code text-xs text-purple-300 bg-purple-950/40 p-1.5 rounded border border-purple-800/50" id="stat-hash">
+          bac6f8cc79...106a
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1">Verificación SHA-256 congelada</p>
+      </div>
+    </div>
+
+    <!-- PANEL DE CONTROL: BOTONES DE CADA PASO -->
+    <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 shadow-xl">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-200">
+            <i class="fa-solid fa-sliders text-indigo-400 mr-1.5"></i> Estación de Ejecución Paso a Paso
+          </h2>
+          <p class="text-xs text-slate-400">Ejecuta cada vía individualmente y visualiza sus salidas en tiempo real.</p>
+        </div>
+        <div id="execution-spinner" class="hidden flex items-center gap-2 text-indigo-400 text-xs">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Procesando script...
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <!-- Botón Paso 1 -->
+        <button onclick="ejecutarPaso(1)" id="btn-p1" class="group flex flex-col items-start p-3.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/50 rounded-lg text-left transition relative">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-semibold text-blue-400 group-hover:text-blue-300">PASO 1 · VÍA 1 API</span>
+            <i class="fa-solid fa-network-wired text-slate-400 group-hover:text-blue-400"></i>
+          </div>
+          <span class="text-xs font-medium text-slate-200">01_extraccion_api.py</span>
+          <span class="text-[11px] text-slate-400 mt-1">Consume BCRPData y Banco Mundial</span>
+        </button>
+
+        <!-- Botón Paso 2 -->
+        <button onclick="ejecutarPaso(2)" id="btn-p2" class="group flex flex-col items-start p-3.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 rounded-lg text-left transition relative">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-semibold text-amber-400 group-hover:text-amber-300">PASO 2 · VÍA 2 WEB</span>
+            <i class="fa-solid fa-download text-slate-400 group-hover:text-amber-400"></i>
+          </div>
+          <span class="text-xs font-medium text-slate-200">02_scraping_web.py</span>
+          <span class="text-[11px] text-slate-400 mt-1">Descarga series MINCETUR / INEI</span>
+        </button>
+
+        <!-- Botón Paso 3 -->
+        <button onclick="ejecutarPaso(3)" id="btn-p3" class="group flex flex-col items-start p-3.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 rounded-lg text-left transition relative">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">PASO 3 · LIMPIEZA</span>
+            <i class="fa-solid fa-filter text-slate-400 group-hover:text-emerald-400"></i>
+          </div>
+          <span class="text-xs font-medium text-slate-200">03_limpieza_datos.py</span>
+          <span class="text-[11px] text-slate-400 mt-1">Merge, PE hotelero y Hash SHA-256</span>
+        </button>
+
+        <!-- Botón Paso 4 -->
+        <button onclick="ejecutarPaso(4)" id="btn-p4" class="group flex flex-col items-start p-3.5 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 rounded-lg text-left transition relative">
+          <div class="flex items-center justify-between w-full mb-1">
+            <span class="text-xs font-semibold text-purple-400 group-hover:text-purple-300">PASO 4 · ANÁLISIS</span>
+            <i class="fa-solid fa-chart-pie text-slate-400 group-hover:text-purple-400"></i>
+          </div>
+          <span class="text-xs font-medium text-slate-200">04_analisis.py</span>
+          <span class="text-[11px] text-slate-400 mt-1">Regresión de panel, figuras y tablas</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PESTAÑAS DE VISUALIZACIÓN DETALLADA -->
+    <div class="bg-slate-950/80 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+      <!-- Barra de navegación de pestañas -->
+      <div class="border-b border-slate-800 px-4 flex flex-wrap gap-2 text-xs font-medium">
+        <button onclick="cambiarTab('tab-resultados')" id="btn-tab-resultados" class="tab-btn py-3 px-4 text-indigo-400 border-b-2 border-indigo-500 flex items-center gap-2">
+          <i class="fa-solid fa-images"></i> Resultados & Figuras (Paper)
+        </button>
+        <button onclick="cambiarTab('tab-api')" id="btn-tab-api" class="tab-btn py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-2">
+          <i class="fa-solid fa-code"></i> Explorador Vía 1 (API BCRP)
+        </button>
+        <button onclick="cambiarTab('tab-mincetur')" id="btn-tab-mincetur" class="tab-btn py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-2">
+          <i class="fa-solid fa-table"></i> Explorador Vía 2 (MINCETUR)
+        </button>
+        <button onclick="cambiarTab('tab-procesados')" id="btn-tab-procesados" class="tab-btn py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-2">
+          <i class="fa-solid fa-database"></i> Dataset Integrado (23 Vars)
+        </button>
+        <button onclick="cambiarTab('tab-logs')" id="btn-tab-logs" class="tab-btn py-3 px-4 text-slate-400 hover:text-slate-200 border-b-2 border-transparent flex items-center gap-2">
+          <i class="fa-solid fa-terminal"></i> Log de Ejecución
+        </button>
+      </div>
+
+      <!-- CONTENIDO TAB 1: RESULTADOS & FIGURAS -->
+      <div id="tab-resultados" class="tab-content p-6 space-y-6">
+        <div>
+          <h3 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-image text-indigo-400"></i> Figuras Generadas para el Artículo y Exposición
+          </h3>
+          <p class="text-xs text-slate-400">Estas figuras se exportaron a 300 DPI en la carpeta <code class="text-indigo-300">/salidas</code> listas para tus diapositivas.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Figura 1 -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden p-3 shadow">
+            <h4 class="text-xs font-semibold text-slate-300 mb-2">Figura 1: Ocupación Observada vs Punto de Equilibrio</h4>
+            <img src="/salidas/figura1_evolucion_ocupacion_equilibrio.png" alt="Figura 1" class="w-full rounded border border-slate-800 hover:opacity-95 transition cursor-pointer" onclick="window.open(this.src)">
+            <p class="text-[11px] text-slate-400 mt-2">Muestra la serie histórica mensual (2013-2025) y la zona crítica de pérdidas operativas durante el shock del COVID-19.</p>
+          </div>
+
+          <!-- Figura 2 -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden p-3 shadow">
+            <h4 class="text-xs font-semibold text-slate-300 mb-2">Figura 2: Sensibilidad del Margen de Seguridad</h4>
+            <img src="/salidas/figura2_sensibilidad_demanda.png" alt="Figura 2" class="w-full rounded border border-slate-800 hover:opacity-95 transition cursor-pointer" onclick="window.open(this.src)">
+            <p class="text-[11px] text-slate-400 mt-2">Diagrama de dispersión y recta de regresión que evalúa el margen de seguridad ante contracciones de arribos turísticos.</p>
+          </div>
+
+          <!-- Figura 3 -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden p-3 shadow lg:col-span-2">
+            <h4 class="text-xs font-semibold text-slate-300 mb-2">Figura 3: Ranking de Vulnerabilidad Financiera por Departamento</h4>
+            <img src="/salidas/figura3_vulnerabilidad_departamental.png" alt="Figura 3" class="w-full max-h-[500px] object-contain rounded border border-slate-800 hover:opacity-95 transition cursor-pointer" onclick="window.open(this.src)">
+            <p class="text-[11px] text-slate-400 mt-2">Clasificación de los 25 departamentos según su margen de seguridad medio respecto al punto de equilibrio hotelero.</p>
+          </div>
+        </div>
+
+        <!-- Tabla 2 Ranking Preview -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h4 class="text-xs font-semibold text-slate-300 mb-3 flex items-center justify-between">
+            <span><i class="fa-solid fa-list-ol text-amber-400 mr-1.5"></i> Tabla 2: Ranking Departamental de Ocupación y Equilibrio</span>
+            <a href="/salidas/tabla2_ranking_equilibrio_departamental.csv" download class="text-[11px] text-indigo-400 hover:underline">
+              <i class="fa-solid fa-file-csv"></i> Descargar CSV
+            </a>
+          </h4>
+          <div class="overflow-x-auto max-h-60" id="tabla2-container">
+            <p class="text-xs text-slate-500">Cargando tabla...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENIDO TAB 2: EXPLORADOR VÍA 1 API -->
+      <div id="tab-api" class="tab-content hidden p-6 space-y-4">
+        <div>
+          <h3 class="text-base font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-network-wired text-blue-400"></i> Datos Crudos Descargados de BCRPData y Banco Mundial
+          </h3>
+          <p class="text-xs text-slate-400">Respuesta cruda JSON almacenada en <code class="text-blue-300">datos/datos_crudos_api.json</code> sin modificar (Numeral 2.4.5).</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800 text-xs">
+            <span class="text-slate-300 font-medium">Endpoints Invocados:</span>
+            <span class="text-emerald-400 font-mono-code font-bold">STATUS HTTP 200 OK</span>
+          </div>
+          <ul class="text-xs space-y-1 text-slate-400 font-mono-code mb-4">
+            <li>• <span class="text-blue-400">BCRPData:</span> https://estadisticas.bcrp.gob.pe/estadisticas/series/api/PN01270PM-PN01288PM-PN01770AM/json/2013-1/2025-12</li>
+            <li>• <span class="text-emerald-400">Banco Mundial:</span> https://api.worldbank.org/v2/country/PER/indicator/ST.INT.ARVL?format=json</li>
+          </ul>
+          
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span>Visor JSON Interactivo:</span>
+            <button onclick="copiarJsonApi()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px]">
+              <i class="fa-regular fa-copy"></i> Copiar JSON
+            </button>
+          </div>
+          <pre id="json-viewer-api" class="bg-slate-950 p-4 rounded-lg text-xs font-mono-code text-slate-300 max-h-96 overflow-y-auto border border-slate-800/80">Cargando datos crudos...</pre>
+        </div>
+      </div>
+
+      <!-- CONTENIDO TAB 3: EXPLORADOR VÍA 2 MINCETUR -->
+      <div id="tab-mincetur" class="tab-content hidden p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-hotel text-amber-400"></i> Estadísticas Regionales de Turismo (MINCETUR / INEI)
+            </h3>
+            <p class="text-xs text-slate-400">Archivo: <code class="text-amber-300">datos/datos_crudos_mincetur.csv</code> (3,900 registros).</p>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="text" id="filtro-region-mincetur" placeholder="Buscar región (ej. CUSCO, JUNIN)..." 
+              class="px-3 py-1.5 bg-slate-900 border border-slate-700 text-xs rounded text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64"
+              onkeyup="if(event.key==='Enter') cargarMuestraMincetur()">
+            <button onclick="cargarMuestraMincetur()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto" id="tabla-mincetur-container">
+          <p class="text-xs text-slate-500">Cargando datos de MINCETUR...</p>
+        </div>
+      </div>
+
+      <!-- CONTENIDO TAB 4: DATASET INTEGRADO -->
+      <div id="tab-procesados" class="tab-content hidden p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-database text-emerald-400"></i> Dataset Procesado Final (23 Columnas Armonizadas)
+            </h3>
+            <p class="text-xs text-slate-400">Archivo: <code class="text-emerald-300">datos/datos_procesados_turismo.csv</code> (4,225 observaciones).</p>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="text" id="filtro-region-proc" placeholder="Filtrar por región..." 
+              class="px-3 py-1.5 bg-slate-900 border border-slate-700 text-xs rounded text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64"
+              onkeyup="if(event.key==='Enter') cargarMuestraProcesados()">
+            <button onclick="cargarMuestraProcesados()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 overflow-x-auto" id="tabla-procesados-container">
+          <p class="text-xs text-slate-500">Cargando dataset procesado...</p>
+        </div>
+      </div>
+
+      <!-- CONTENIDO TAB 5: LOGS EN VIVO -->
+      <div id="tab-logs" class="tab-content hidden p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center gap-2">
+              <i class="fa-solid fa-terminal text-indigo-400"></i> Registro de Auditoría y Tiempos de Extracción
+            </h3>
+            <p class="text-xs text-slate-400">Salida oficial de consola según numeral 2.4.2 (<code class="text-indigo-300">log_ejecucion.txt</code>).</p>
+          </div>
+          <button onclick="cargarLogs()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-right"></i> Actualizar Log
+          </button>
+        </div>
+
+        <pre id="logs-container" class="bg-slate-950 p-4 rounded-xl text-xs font-mono-code text-emerald-400 max-h-96 overflow-y-auto border border-slate-800 leading-relaxed">Cargando registros...</pre>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 border-t border-slate-800 py-4 px-6 text-center text-xs text-slate-500">
+    Facultad de Economía · Universidad Nacional del Centro del Perú · Finanzas I (055D) · Huancayo
+  </footer>
+
+  <!-- Lógica JavaScript del Dashboard -->
+  <script>
+    // Cambio de pestañas
+    function cambiarTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-indigo-400', 'border-indigo-500');
+        btn.classList.add('text-slate-400', 'border-transparent');
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if(activeBtn) {
+        activeBtn.classList.add('text-indigo-400', 'border-indigo-500');
+        activeBtn.classList.remove('text-slate-400', 'border-transparent');
+      }
+
+      if(tabId === 'tab-api') cargarApiRaw();
+      if(tabId === 'tab-mincetur') cargarMuestraMincetur();
+      if(tabId === 'tab-procesados') cargarMuestraProcesados();
+      if(tabId === 'tab-logs') cargarLogs();
+      if(tabId === 'tab-resultados') cargarTabla2();
+    }
+
+    // Actualizar estado general
+    async function actualizarStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        if(data.num_filas_procesadas) {
+          document.getElementById('stat-filas').innerText = data.num_filas_procesadas.toLocaleString() + ' Filas';
+        }
+        if(data.hash_sha256) {
+          document.getElementById('stat-hash').innerText = data.hash_sha256.substring(0, 10) + '...' + data.hash_sha256.substring(58);
+          document.getElementById('stat-hash').title = data.hash_sha256;
+        }
+      } catch (err) {
+        console.error("Error al actualizar status:", err);
+      }
+    }
+
+    // Ejecutar un script paso a paso
+    async function ejecutarPaso(paso) {
+      const spinner = document.getElementById('execution-spinner');
+      const btn = document.getElementById('btn-p' + paso);
+      spinner.classList.remove('hidden');
+      if(btn) btn.classList.add('ring-2', 'ring-indigo-500');
+
+      try {
+        const res = await fetch('/api/run/' + paso, { method: 'POST' });
+        const data = await res.json();
+        if(data.success) {
+          alert('¡Paso ' + paso + ' (' + data.script + ') completado con éxito en ' + data.duracion_segundos + 's!');
+          actualizarStatus();
+          cargarLogs();
+        } else {
+          alert('Error en Paso ' + paso + ': ' + (data.stderr || data.error));
+        }
+      } catch (err) {
+        alert('Error de conexión al ejecutar el paso: ' + err);
+      } finally {
+        spinner.classList.add('hidden');
+        if(btn) btn.classList.remove('ring-2', 'ring-indigo-500');
+      }
+    }
+
+    // Ejecutar pipeline completo
+    async function ejecutarTodo() {
+      const btn = document.getElementById('btn-run-all');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Ejecutando...';
+
+      for (let p = 1; p <= 4; p++) {
+        await ejecutarPaso(p);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-play"></i> Ejecutar Todo el Pipeline';
+      cambiarTab('tab-resultados');
+    }
+
+    // Cargar JSON Crudo de API
+    async function cargarApiRaw() {
+      const viewer = document.getElementById('json-viewer-api');
+      try {
+        const res = await fetch('/api/datos/api-raw');
+        const data = await res.json();
+        viewer.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        viewer.innerText = "Error al cargar datos crudos de API: " + err;
+      }
+    }
+
+    function copiarJsonApi() {
+      const texto = document.getElementById('json-viewer-api').innerText;
+      navigator.clipboard.writeText(texto);
+      alert('¡JSON copiado al portapapeles!');
+    }
+
+    // Cargar datos MINCETUR
+    async function cargarMuestraMincetur() {
+      const cont = document.getElementById('tabla-mincetur-container');
+      const region = document.getElementById('filtro-region-mincetur').value;
+      try {
+        const res = await fetch('/api/datos/mincetur-sample?limit=25&region=' + encodeURIComponent(region));
+        const data = await res.json();
+        if(data.error) { cont.innerHTML = '<p class="text-rose-400 text-xs">' + data.error + '</p>'; return; }
+
+        let html = '<table class="w-full text-left text-xs text-slate-300 font-mono-code">';
+        html += '<thead class="bg-slate-950 text-slate-400 uppercase text-[10px] border-b border-slate-800"><tr>';
+        data.columnas.forEach(c => html += '<th class="p-2">' + c + '</th>');
+        html += '</tr></thead><tbody>';
+        data.filas.forEach((f, idx) => {
+          html += '<tr class="border-b border-slate-800/50 hover:bg-slate-800/40">';
+          data.columnas.forEach(c => html += '<td class="p-2 truncate max-w-[150px]">' + (f[c] !== null ? f[c] : '') + '</td>');
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+        cont.innerHTML = html;
+      } catch (err) {
+        cont.innerHTML = '<p class="text-rose-400 text-xs">Error: ' + err + '</p>';
+      }
+    }
+
+    // Cargar dataset procesado
+    async function cargarMuestraProcesados() {
+      const cont = document.getElementById('tabla-procesados-container');
+      const region = document.getElementById('filtro-region-proc').value;
+      try {
+        const res = await fetch('/api/datos/procesados-sample?limit=25&region=' + encodeURIComponent(region));
+        const data = await res.json();
+        if(data.error) { cont.innerHTML = '<p class="text-rose-400 text-xs">' + data.error + '</p>'; return; }
+
+        let html = '<table class="w-full text-left text-xs text-slate-300 font-mono-code">';
+        html += '<thead class="bg-slate-950 text-slate-400 uppercase text-[10px] border-b border-slate-800"><tr>';
+        data.columnas.forEach(c => html += '<th class="p-2 whitespace-nowrap">' + c + '</th>');
+        html += '</tr></thead><tbody>';
+        data.filas.forEach((f, idx) => {
+          html += '<tr class="border-b border-slate-800/50 hover:bg-slate-800/40">';
+          data.columnas.forEach(c => html += '<td class="p-2 whitespace-nowrap">' + (f[c] !== null ? f[c] : '') + '</td>');
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+        cont.innerHTML = html;
+      } catch (err) {
+        cont.innerHTML = '<p class="text-rose-400 text-xs">Error: ' + err + '</p>';
+      }
+    }
+
+    // Cargar Tabla 2 Ranking
+    async function cargarTabla2() {
+      const cont = document.getElementById('tabla2-container');
+      try {
+        const res = await fetch('/api/datos/tabla/tabla2_ranking_equilibrio_departamental');
+        const data = await res.json();
+        if(data.error) { cont.innerHTML = '<p class="text-slate-500 text-xs">Ejecuta el Paso 4 para generar las tablas.</p>'; return; }
+
+        let html = '<table class="w-full text-left text-xs text-slate-300">';
+        html += '<thead class="bg-slate-950 text-slate-400 uppercase text-[10px] border-b border-slate-800"><tr>';
+        data.columnas.forEach(c => html += '<th class="p-2 whitespace-nowrap">' + c + '</th>');
+        html += '</tr></thead><tbody>';
+        data.filas.forEach(f => {
+          const ms = parseFloat(f['margen_seguridad_medio'] || 0);
+          const colorClase = ms >= 0 ? 'text-emerald-400' : 'text-rose-400 font-bold';
+          html += '<tr class="border-b border-slate-800/50 hover:bg-slate-800/40">';
+          data.columnas.forEach(c => {
+            const val = f[c];
+            html += '<td class="p-2 whitespace-nowrap ' + (c === 'margen_seguridad_medio' ? colorClase : '') + '">' + val + '</td>';
+          });
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+        cont.innerHTML = html;
+      } catch (err) {
+        cont.innerHTML = '<p class="text-rose-400 text-xs">Error: ' + err + '</p>';
+      }
+    }
+
+    // Cargar Logs
+    async function cargarLogs() {
+      try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+        const el = document.getElementById('logs-container');
+        el.innerText = data.logs;
+        el.scrollTop = el.scrollHeight;
+      } catch (err) {
+        document.getElementById('logs-container').innerText = "Error al cargar logs: " + err;
+      }
+    }
+
+    // Inicio automático
+    window.addEventListener('DOMContentLoaded', () => {
+      actualizarStatus();
+      cargarTabla2();
+    });
+  </script>
+</body>
+</html>
