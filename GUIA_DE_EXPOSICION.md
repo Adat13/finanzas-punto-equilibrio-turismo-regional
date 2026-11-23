@@ -1,7 +1,8 @@
 # GUÍA DE EXPOSICIÓN Y DEFENSA DEL ARTÍCULO
 ## Curso: Finanzas I (055D) — UNCP | Cátedra: Dr. Ciro Iván Machacuay Meza
 **Tema:** Punto de equilibrio y sensibilidad en un proyecto turístico regional  
-**Expositores:** David Angel & Compañero  
+**Expositores:** Daniel Ricardo Sulca Castro & Compañero  
+**Código de Matrícula:** 2024200532L (e_2024200532L@uncp.edu.pe)  
 **Tiempo estimado:** 8 a 10 minutos + ronda de preguntas  
 
 ---
@@ -10,7 +11,7 @@
 
 ### Diapositiva 1: Portada
 * **Título:** Punto de equilibrio operativo y análisis de sensibilidad en proyectos hoteleros departamentales: Un enfoque de datos de panel en el Perú, 2013–2025.
-* **Autores:** David Angel & Coautor
+* **Autores:** Daniel Ricardo Sulca Castro & Coautor (2024200532L)
 * **Institución:** Facultad de Economía · Universidad Nacional del Centro del Perú · Huancayo, 2026.
 * **Docente:** Dr. Ciro Iván Machacuay Meza.
 * **Guion de presentación:**  

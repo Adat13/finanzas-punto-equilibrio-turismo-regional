@@ -5,8 +5,9 @@
 **Asignatura:** Finanzas I (055D) — Semestre 2026-II  
 **Docente:** Dr. Ciro Iván Machacuay Meza  
 
-* **Estudiante:** David Angel
-* **Código de Matrícula:** [Completar Código]
+* **Estudiante:** Daniel Ricardo Sulca Castro
+* **Código de Matrícula:** 2024200532L
+* **Correo Institucional:** e_2024200532L@uncp.edu.pe
 * **Tema Asignado:** Punto de equilibrio y sensibilidad en un proyecto turístico regional
 * **Repositorio GitHub:** [https://github.com/Adat13/finanzas-punto-equilibrio-turismo-regional](https://github.com/Adat13/finanzas-punto-equilibrio-turismo-regional)
 

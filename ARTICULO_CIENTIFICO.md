@@ -1,6 +1,7 @@
 # Punto de equilibrio operativo y análisis de sensibilidad en proyectos hoteleros departamentales: Un enfoque de datos de panel en el Perú, 2013–2025
 
-**David Angel & Coautor**  
+**Daniel Ricardo Sulca Castro & Coautor**  
+Código de matrícula: 2024200532L · Correo: e_2024200532L@uncp.edu.pe  
 Facultad de Economía · Escuela Profesional de Economía  
 Universidad Nacional del Centro del Perú (UNCP)  
 Finanzas I (055D) · Docente: Dr. Ciro Iván Machacuay Meza  
